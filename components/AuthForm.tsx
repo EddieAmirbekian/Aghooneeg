@@ -10,6 +10,8 @@ import { Button } from "./ui/Button";
 import AuthSocialButton from "./AuthSocialButton";
 import { BsGithub, BsGoogle } from "react-icons/bs";
 import axios from "axios";
+import { useToast } from "@/app/hooks/use-toast";
+import { signIn } from "next-auth/react";
 
 type Variant = "SIGNIN" | "SIGNUP";
 type SignInFormType = z.infer<typeof signInSchema>;
@@ -180,6 +182,7 @@ const SignUpForm: FC<{
 const AuthForm: FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [variant, setVariant] = useState<Variant>("SIGNIN");
+  const { toast } = useToast();
 
   const toggleVariant = useCallback(() => {
     if (variant === "SIGNIN") {
@@ -193,18 +196,64 @@ const AuthForm: FC = () => {
     setIsLoading(true);
 
     if (variant === "SIGNUP") {
-      axios.post("/api/register", data);
+      axios
+        .post("/api/register", data)
+        .catch(() => {
+          toast({
+            description: "Something went wrong!",
+            variant: "destructive",
+          });
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
 
     if (variant === "SIGNIN") {
-      // nextauth signin
+      signIn("credentials", {
+        ...data,
+        redirect: false,
+      })
+        .then((callback) => {
+          if (callback?.error) {
+            toast({
+              description: "Invalid credentials!",
+              variant: "destructive",
+            });
+          } else if (callback?.ok) {
+            toast({
+              title: "Success",
+              description: "Logged in successfully!",
+            });
+          }
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
-
-    // setIsLoading(false);
   };
 
   const socialAction = (action: string) => {
     setIsLoading(true);
+    signIn(action, {
+      redirect: false,
+    })
+      .then((callback) => {
+        if (callback?.error) {
+          toast({
+            description: "Invalid credentials!",
+            variant: "destructive",
+          });
+        } else if (callback?.ok) {
+          toast({
+            title: "Success",
+            description: "Logged in successfully!",
+          });
+        }
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   return (
