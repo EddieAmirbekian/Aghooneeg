@@ -1,20 +1,19 @@
+import { Loader2 } from "lucide-react";
 import { FC } from "react";
 import type { IconType } from "react-icons";
+import { Button } from "./ui/Button";
 
 interface AuthSocialButtonProps {
   icon: IconType;
   onClick: () => void;
+  disabled?: boolean;
 }
 
-const AuthSocialButton: FC<AuthSocialButtonProps> = ({ icon: Icon, onClick }) => {
+const AuthSocialButton: FC<AuthSocialButtonProps> = ({ icon: Icon, onClick, disabled }) => {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="inline-flex w-full justify-center rounded-md bg-white px-4 py-2 text-slate-500 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:outline-offset-0"
-    >
+    <Button variant='outline' onClick={onClick} disabled={disabled} className="inline-flex w-full">
       <Icon />
-    </button>
+    </Button>
   );
 };
 

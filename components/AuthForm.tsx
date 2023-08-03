@@ -6,57 +6,180 @@ import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { Input } from "./ui/Input";
 import { z } from "zod";
 import { Label } from "./ui/Label";
-import { Button } from "./ui/button";
+import { Button } from "./ui/Button";
 import AuthSocialButton from "./AuthSocialButton";
-import { BsFacebook, BsGithub, BsGoogle } from "react-icons/bs";
+import { BsGithub, BsGoogle } from "react-icons/bs";
+import axios from "axios";
 
 type Variant = "SIGNIN" | "SIGNUP";
-type AuthFormType = z.infer<typeof authFormSchema>;
+type SignInFormType = z.infer<typeof signInSchema>;
+type SignUpFormType = z.infer<typeof signUpSchema>;
 
-const authFormSchema = z
-  .object({
-    email: z
-      .string()
-      .email({
-        message: "Please enter valid email address",
-      })
-      .min(1, {
-        message: "Required",
-      }),
-    password: z.string().min(1, {
+const signInSchema = z.object({
+  email: z
+    .string()
+    .email({
+      message: "Please enter valid email address",
+    })
+    .min(1, {
       message: "Required",
     }),
-  })
-  .or(
-    z.object({
-      name: z
-        .string()
-        .min(1, {
-          message: "Required",
-        })
-        .min(4, {
-          message: "Minimum 4 characters required",
-        })
-        .max(40, {
-          message: "Maximum 40 characters required",
-        }),
-      email: z
-        .string()
-        .email({
-          message: "Please enter valid email address",
-        })
-        .min(1, {
-          message: "Required",
-        }),
-      password: z.string().min(1, {
-        message: "Required",
-      }),
+  password: z.string().min(1, {
+    message: "Required",
+  }),
+});
+
+const signUpSchema = z.object({
+  name: z
+    .string()
+    .min(1, {
+      message: "Required",
     })
+    .min(4, {
+      message: "Minimum 4 characters required",
+    })
+    .max(40, {
+      message: "Maximum 40 characters required",
+    }),
+  email: z
+    .string()
+    .email({
+      message: "Please enter valid email address",
+    })
+    .min(1, {
+      message: "Required",
+    }),
+  password: z.string().min(6, {
+    message: "Minimum 6 characters required",
+  }),
+});
+
+const SignInForm: FC<{
+  loading: boolean;
+  onSubmit: SubmitHandler<FieldValues>;
+}> = ({ loading, onSubmit }) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignInFormType>({
+    resolver: zodResolver(signInSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  return (
+    <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+      <div>
+        <Label className="mb-1" htmlFor="email">
+          Email
+        </Label>
+        <Input
+          id="email"
+          type="email"
+          errors={errors?.email?.message}
+          disabled={loading}
+          {...register("email")}
+        />
+      </div>
+      <div>
+        <Label className="mb-1" htmlFor="password">
+          Password
+        </Label>
+        <Input
+          id="password"
+          type="password"
+          errors={errors?.password?.message}
+          disabled={loading}
+          {...register("password")}
+        />
+      </div>
+      <div>
+        <Button
+          disabled={loading}
+          className="w-full bg-cyan-500 hover:bg-cyan-500/90"
+          type="submit"
+        >
+          Sign In
+        </Button>
+      </div>
+    </form>
   );
+};
+
+const SignUpForm: FC<{
+  loading: boolean;
+  onSubmit: SubmitHandler<FieldValues>;
+}> = ({ loading, onSubmit }) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignUpFormType>({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+    },
+  });
+
+  return (
+    <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+      <div>
+        <Label className="mb-1" htmlFor="name">
+          Name
+        </Label>
+        <Input
+          id="name"
+          type="name"
+          errors={errors?.name?.message}
+          disabled={loading}
+          {...register("name")}
+        />
+      </div>
+      <div>
+        <Label className="mb-1" htmlFor="email">
+          Email
+        </Label>
+        <Input
+          id="email"
+          type="email"
+          errors={errors?.email?.message}
+          disabled={loading}
+          {...register("email")}
+        />
+      </div>
+      <div>
+        <Label className="mb-1" htmlFor="password">
+          Password
+        </Label>
+        <Input
+          id="password"
+          type="password"
+          errors={errors?.password?.message}
+          disabled={loading}
+          {...register("password")}
+        />
+      </div>
+      <div>
+        <Button
+          disabled={loading}
+          className="w-full bg-cyan-500 hover:bg-cyan-500/90"
+          type="submit"
+        >
+          Sign Up
+        </Button>
+      </div>
+    </form>
+  );
+};
 
 const AuthForm: FC = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [variant, setVariant] = useState<Variant>("SIGNIN");
-  const [loading, setIsLoading] = useState<boolean>(false);
 
   const toggleVariant = useCallback(() => {
     if (variant === "SIGNIN") {
@@ -66,24 +189,11 @@ const AuthForm: FC = () => {
     }
   }, [variant]);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<AuthFormType>({
-    resolver: zodResolver(authFormSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-    },
-  });
-
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     setIsLoading(true);
 
     if (variant === "SIGNUP") {
-      // mutate signup
+      axios.post("/api/register", data);
     }
 
     if (variant === "SIGNIN") {
@@ -100,47 +210,11 @@ const AuthForm: FC = () => {
   return (
     <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
       <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
-        <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          {variant === "SIGNUP" && (
-            <div>
-              <Label className="mb-1" htmlFor="name">
-                Name
-              </Label>
-              <Input id="name" errors={errors} {...register("name")} />
-            </div>
-          )}
-          <div>
-            <Label className="mb-1" htmlFor="email">
-              Email
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              errors={errors}
-              {...register("email")}
-            />
-          </div>
-          <div>
-            <Label className="mb-1" htmlFor="password">
-              Password
-            </Label>
-            <Input
-              id="password"
-              type="password"
-              errors={errors}
-              {...register("password")}
-            />
-          </div>
-          <div>
-            <Button
-              disabled={loading}
-              className="w-full bg-cyan-500 hover:bg-cyan-500/90"
-              type="submit"
-            >
-              {variant === "SIGNIN" ? "Sign In" : "Sign Up"}
-            </Button>
-          </div>
-        </form>
+        {variant === "SIGNIN" ? (
+          <SignInForm loading={isLoading} onSubmit={onSubmit} />
+        ) : (
+          <SignUpForm loading={isLoading} onSubmit={onSubmit} />
+        )}
         <div className="mt-6">
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
@@ -154,14 +228,12 @@ const AuthForm: FC = () => {
           </div>
           <div className="mt-6 flex gap-2">
             <AuthSocialButton
+              disabled={isLoading}
               icon={BsGoogle}
               onClick={() => socialAction("google")}
             />
             <AuthSocialButton
-              icon={BsFacebook}
-              onClick={() => socialAction("facebook")}
-            />
-            <AuthSocialButton
+              disabled={isLoading}
               icon={BsGithub}
               onClick={() => socialAction("github")}
             />
@@ -170,7 +242,7 @@ const AuthForm: FC = () => {
         <div className="flex gap-2 justify-center text-sm mt-6 px-2 text-slate-500">
           <div>
             {variant === "SIGNIN"
-              ? "New to Aghoonig?"
+              ? "New to Aghooneeg?"
               : "Already have an account?"}
           </div>
           <div onClick={toggleVariant} className="underline cursor-pointer">
