@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FC, useCallback, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { Input } from "./ui/Input";
 import { z } from "zod";
@@ -11,7 +11,8 @@ import AuthSocialButton from "./AuthSocialButton";
 import { BsGithub, BsGoogle } from "react-icons/bs";
 import axios from "axios";
 import { useToast } from "@/app/hooks/use-toast";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 type Variant = "SIGNIN" | "SIGNUP";
 type SignInFormType = z.infer<typeof signInSchema>;
@@ -180,9 +181,17 @@ const SignUpForm: FC<{
 };
 
 const AuthForm: FC = () => {
+  const session = useSession();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [variant, setVariant] = useState<Variant>("SIGNIN");
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (session.status === "authenticated") {
+      router.push("/users");
+    }
+  }, [session?.status, router]);
 
   const toggleVariant = useCallback(() => {
     if (variant === "SIGNIN") {
@@ -198,6 +207,7 @@ const AuthForm: FC = () => {
     if (variant === "SIGNUP") {
       axios
         .post("/api/register", data)
+        .then(() => signIn('credentials', data))
         .catch(() => {
           toast({
             description: "Something went wrong!",
@@ -225,6 +235,7 @@ const AuthForm: FC = () => {
               title: "Success",
               description: "Logged in successfully!",
             });
+            router.push('/users');
           }
         })
         .finally(() => {
