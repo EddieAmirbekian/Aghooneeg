@@ -18,7 +18,7 @@ const UserAvatar: FC<UserAvatarProps> = ({ user }) => {
   return (
     <div className="relative">
       <Avatar>
-        <AvatarImage src={user.image!} alt={user.name!} />
+        <AvatarImage src={user?.image!} alt={user?.name!} />
         <AvatarFallback>{getFallback()}</AvatarFallback>
       </Avatar>
       <span className="absolute block rounded-full bg-green-500 ring-2 ring-white bottom-0 right-0 h-2 w-2 md:h-3 md:w-3" />
