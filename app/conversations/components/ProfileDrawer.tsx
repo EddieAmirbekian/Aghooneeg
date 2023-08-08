@@ -9,6 +9,7 @@ import { Trash2, X } from "lucide-react";
 import UserAvatar from "@/app/users/components/UserAvatar";
 import { Button } from "@/components/ui/Button";
 import Modal from "@/components/Modal";
+import ConfirmModal from "./ConfirmModal";
 
 interface ProfileDrawerProps {
   data: Conversation & {
@@ -39,11 +40,10 @@ const ProfileDrawer: FC<ProfileDrawerProps> = ({ isOpen, onClose, data }) => {
 
   return (
     <>
-      <Modal isOpen={confirmOpen} onClose={() => setConfirmOpen(false)}>
-        <div className="bg-white p-5">
-          <p>Hello!</p>
-        </div>
-      </Modal>
+      <ConfirmModal
+        isOpen={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+      />
       <Transition.Root show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={onClose}>
           <Transition.Child
