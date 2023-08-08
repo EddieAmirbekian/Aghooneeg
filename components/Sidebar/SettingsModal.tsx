@@ -92,7 +92,7 @@ const SettingsModal: FC<SettingsModalProps> = ({
                     width={48}
                     height={48}
                     className="rounded-full"
-                    src={image || currentUser?.image}
+                    src={image || currentUser?.image || "placeholder.jpg"}
                     alt="avatar"
                   />
                   <CldUploadButton
@@ -112,7 +112,12 @@ const SettingsModal: FC<SettingsModalProps> = ({
             <Button disabled={isLoading} variant="secondary" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" disabled={isLoading} onClick={onClose}>
+            <Button
+              type="submit"
+              disabled={isLoading}
+              onClick={onClose}
+              className="bg-cyan-500 hover:bg-cyan-500/90"
+            >
               Save
             </Button>
           </div>

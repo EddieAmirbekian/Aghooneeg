@@ -19,7 +19,7 @@ const getUsers = async () => {
       },
     });
 
-    return users;
+    return users || [];
   } catch (error) {
     return [];
   }

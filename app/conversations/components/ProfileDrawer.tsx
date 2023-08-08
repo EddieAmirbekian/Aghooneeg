@@ -10,6 +10,7 @@ import UserAvatar from "@/app/users/components/UserAvatar";
 import { Button } from "@/components/ui/Button";
 import Modal from "@/components/Modal";
 import ConfirmModal from "./ConfirmModal";
+import UserAvatarGroup from "@/app/users/components/UserAvatarGroup";
 
 interface ProfileDrawerProps {
   data: Conversation & {
@@ -87,7 +88,11 @@ const ProfileDrawer: FC<ProfileDrawerProps> = ({ isOpen, onClose, data }) => {
                       <div className="relative mt-6 flex-1 px-4 sm:px-6">
                         <div className="flex flex-col items-center">
                           <div className="mb-2">
-                            <UserAvatar user={otherUser} />
+                            {data.isGroup ? (
+                              <UserAvatarGroup users={data.users} />
+                            ) : (
+                              <UserAvatar user={otherUser} />
+                            )}
                           </div>
                           <div>{title}</div>
                           <div className="text-sm text-slate-500">
@@ -128,6 +133,16 @@ const ProfileDrawer: FC<ProfileDrawerProps> = ({ isOpen, onClose, data }) => {
                                     </dd>
                                   </div>
                                 </>
+                              )}
+                              {data.isGroup && (
+                                <div>
+                                  <dt className="text-sm font-medium text-slate-500 sm:w-40 sm:flex-shrink-0">
+                                    Emails
+                                  </dt>
+                                  <dd className="mt-1 text-sm text-slate-900 sm:col-span-2">
+                                    {data.users.map(user => user.email).join(', ')}
+                                  </dd>
+                                </div>
                               )}
                             </dl>
                           </div>
