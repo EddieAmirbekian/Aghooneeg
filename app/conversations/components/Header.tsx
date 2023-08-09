@@ -23,7 +23,7 @@ const Header: FC<HeaderProps> = ({ conversation }) => {
     if (conversation.isGroup) {
       return `${conversation.users.length} members`;
     }
-    return members.indexOf(otherUser?.email!) === -1 ? "Active" : "Offline";
+    return members.indexOf(otherUser?.email!) !== -1 ? "Active" : "Offline";
   }, [conversation, members, otherUser]);
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
 
