@@ -9,6 +9,9 @@ interface UserAvatarProps {
 
 const UserAvatar: FC<UserAvatarProps> = ({ user }) => {
   const getFallback = () => {
+    if (!user) {
+      return '';
+    }
     return user
       .name!.split(" ")
       .slice(0, 2)
