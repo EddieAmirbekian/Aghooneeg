@@ -4,8 +4,8 @@ import { User } from "@prisma/client";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { FC, useCallback, useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/Avatar";
 import UserAvatar from "./UserAvatar";
+import LoadingModal from "@/components/LoadingModal";
 
 interface UserBoxProps {
   data: User;
@@ -28,6 +28,8 @@ const UserBox: FC<UserBoxProps> = ({ data }) => {
   }, [data, router]);
 
   return (
+    <>
+    {isLoading && <LoadingModal />}
     <div
       onClick={handleClick}
       className="w-full relative flex items-center space-x-3 bg-white p-3 hover:bg-neutral-100 rounded-lg transition cursor-pointer"
@@ -43,6 +45,7 @@ const UserBox: FC<UserBoxProps> = ({ data }) => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
