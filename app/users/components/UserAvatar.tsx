@@ -1,3 +1,4 @@
+import useActiveList from "@/app/hooks/use-active-list";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/Avatar";
 import { User } from "@prisma/client";
 import { FC } from "react";
@@ -14,6 +15,8 @@ const UserAvatar: FC<UserAvatarProps> = ({ user }) => {
       .map((curr) => curr.charAt(0).toUpperCase())
       .join();
   };
+  const { members } = useActiveList();
+  const isActive = members.indexOf(user?.email!) !== -1;
 
   return (
     <div className="relative">
@@ -21,7 +24,9 @@ const UserAvatar: FC<UserAvatarProps> = ({ user }) => {
         <AvatarImage src={user?.image!} alt={user?.name!} />
         <AvatarFallback>{getFallback()}</AvatarFallback>
       </Avatar>
-      <span className="absolute block rounded-full bg-green-500 ring-2 ring-white bottom-0 right-0 h-2 w-2 md:h-3 md:w-3" />
+      {isActive && (
+        <span className="absolute block rounded-full bg-green-500 ring-2 ring-white bottom-0 right-0 h-2 w-2 md:h-3 md:w-3" />
+      )}
     </div>
   );
 };

@@ -24,7 +24,7 @@ const UserAvatarGroup: FC<UserAvatarGroupProps> = ({ users = [] }) => {
             positionMap[index as keyof typeof positionMap]
           }`}
         >
-          <Image alt="avatar" fill src={user?.image || "placeholder.jpg"} />
+          <Image alt="avatar" fill src={user?.image || "/images/placeholder.jpg"} />
         </div>
       ))}
     </div>

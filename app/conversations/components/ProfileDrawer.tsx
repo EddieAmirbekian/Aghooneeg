@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/Button";
 import Modal from "@/components/Modal";
 import ConfirmModal from "./ConfirmModal";
 import UserAvatarGroup from "@/app/users/components/UserAvatarGroup";
+import useActiveList from "@/app/hooks/use-active-list";
 
 interface ProfileDrawerProps {
   data: Conversation & {
@@ -23,6 +24,7 @@ interface ProfileDrawerProps {
 const ProfileDrawer: FC<ProfileDrawerProps> = ({ isOpen, onClose, data }) => {
   const otherUser = useOtherUser(data);
   const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
+  const {members} = useActiveList();
 
   const joinedDate = useMemo(
     () => format(new Date(otherUser.createdAt), "PP"),
@@ -36,8 +38,8 @@ const ProfileDrawer: FC<ProfileDrawerProps> = ({ isOpen, onClose, data }) => {
     if (data.isGroup) {
       return `${data.users.length} members`;
     }
-    return "Active";
-  }, [data]);
+    return members.indexOf(otherUser?.email!) !== -1 ? "Active" : "Offline";
+  }, [data, members, otherUser]);
 
   return (
     <>

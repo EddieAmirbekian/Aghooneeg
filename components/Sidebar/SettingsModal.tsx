@@ -92,7 +92,7 @@ const SettingsModal: FC<SettingsModalProps> = ({
                     width={48}
                     height={48}
                     className="rounded-full"
-                    src={image || currentUser?.image || "placeholder.jpg"}
+                    src={image || currentUser?.image || "/images/placeholder.jpg"}
                     alt="avatar"
                   />
                   <CldUploadButton
